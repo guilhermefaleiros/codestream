@@ -1,0 +1,28 @@
+database:
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  name: ${DB_NAME}
+  max_connections: 10
+  min_connections: 5
+  max_idle_time: 10000
+  max_conn_lifetime: 10000
+
+app:
+  port: :8080
+  max_file_size: 1000000000
+
+aws:
+  access_key_id: ${AWS_ACCESS_KEY_ID}
+  secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+  region: us-east-1
+  s3:
+    source_folder: videos
+    destination_folder: transcoded-videos
+    bucket: codestream-content-management
+
+kafka:
+  bootstrap_servers: localhost:9092
+  group_id: content-management-api
+  video_uploaded_topic: content-management.video.uploaded

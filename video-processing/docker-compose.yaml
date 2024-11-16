@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: video-processing-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: video-processing
+    ports:
+      - "5432:5432"
+
+  flyway:
+    image: flyway/flyway:8.5.10
+    container_name: content-management-flyway-migrations
+    command: -url=jdbc:postgresql://postgres:5432/video-processing -user=postgres -password=postgres -locations=filesystem:/flyway/sql migrate
+    depends_on:
+      - postgres
+    volumes:
+      - ./scripts/migrations:/flyway/sql
