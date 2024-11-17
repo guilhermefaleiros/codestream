@@ -5,40 +5,55 @@ import (
 	"time"
 )
 
+type VideoType string
+
+const (
+	VideoTypeTrailer VideoType = "trailer"
+	VideoTypeMovie   VideoType = "movie"
+)
+
+type VideoStatus string
+
+const (
+	VideoStatusCreated    VideoStatus = "created"
+	VideoStatusUploaded   VideoStatus = "uploaded"
+	VideoStatusProcessing VideoStatus = "processing"
+)
+
 type Video struct {
 	ID               string
-	Title            string
-	Description      string
 	FilePath         string
 	StorageLocation  string
 	ContentType      string
 	StorageProvider  string
 	OriginalFileName string
+	MovieID          string
+	Type             VideoType
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	Status           string
+	Status           VideoStatus
 }
 
 func (v *Video) Uploaded(filePath, storageLocation, storageProvider string) {
 	v.FilePath = filePath
 	v.StorageLocation = storageLocation
 	v.StorageProvider = storageProvider
-	v.Status = "uploaded"
+	v.Status = VideoStatusUploaded
 }
 
 func (v *Video) Processing() {
-	v.Status = "processing"
+	v.Status = VideoStatusProcessing
 }
 
-func NewVideo(title, description, contentType, originalFileName string) *Video {
+func NewVideo(contentType, originalFileName, movieID string, videoType VideoType) *Video {
 	return &Video{
 		ID:               uuid.New().String(),
-		Title:            title,
 		ContentType:      contentType,
-		Description:      description,
 		OriginalFileName: originalFileName,
+		MovieID:          movieID,
 		CreatedAt:        time.Now(),
 		UpdatedAt:        time.Now(),
-		Status:           "created",
+		Type:             videoType,
+		Status:           VideoStatusCreated,
 	}
 }

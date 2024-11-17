@@ -27,6 +27,10 @@ func JSONWithLocation(w http.ResponseWriter, response interface{}, location stri
 	json.NewEncoder(w).Encode(response)
 }
 
+func DeserializeRequestBody(r *http.Request, v interface{}) error {
+	return json.NewDecoder(r.Body).Decode(v)
+}
+
 func FileToBytes(file multipart.File) ([]byte, error) {
 	var buf bytes.Buffer
 	_, err := io.Copy(&buf, file)

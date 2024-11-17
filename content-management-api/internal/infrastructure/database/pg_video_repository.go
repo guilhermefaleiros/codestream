@@ -14,15 +14,15 @@ type PGVideoRepository struct {
 func (pg *PGVideoRepository) Save(ctx context.Context, video *entity.Video) error {
 	query := `
 		INSERT INTO videos (
-			id, title, description, file_path, storage_location, content_type, 
+			id, movie_id, type, file_path, storage_location, content_type,
 			storage_provider, original_file_name, created_at, updated_at, status
 		) VALUES (
 			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 		)
 		ON CONFLICT (id) DO UPDATE SET
-			title = EXCLUDED.title,
-			description = EXCLUDED.description,
 			file_path = EXCLUDED.file_path,
+		    type = EXCLUDED.type,
+			movie_id = EXCLUDED.movie_id,
 			storage_location = EXCLUDED.storage_location,
 			content_type = EXCLUDED.content_type,
 			storage_provider = EXCLUDED.storage_provider,
@@ -33,8 +33,8 @@ func (pg *PGVideoRepository) Save(ctx context.Context, video *entity.Video) erro
 
 	_, err := pg.pool.Exec(ctx, query,
 		video.ID,
-		video.Title,
-		video.Description,
+		video.MovieID,
+		video.Type,
 		video.FilePath,
 		video.StorageLocation,
 		video.ContentType,

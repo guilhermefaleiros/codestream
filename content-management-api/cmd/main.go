@@ -13,7 +13,7 @@ import (
 	appConfig "github.com/guilhermefaleiros/codestream/content-management-system/internal/infrastructure/config"
 	"github.com/guilhermefaleiros/codestream/content-management-system/internal/infrastructure/database"
 	"github.com/guilhermefaleiros/codestream/content-management-system/internal/infrastructure/kafka"
-	"github.com/guilhermefaleiros/codestream/content-management-system/internal/infrastructure/web"
+	"github.com/guilhermefaleiros/codestream/content-management-system/internal/infrastructure/web/controller"
 	"github.com/guilhermefaleiros/codestream/content-management-system/pkg"
 	"log"
 	"net/http"
@@ -57,11 +57,21 @@ func main() {
 	}
 
 	videoRepository := database.NewPGVideoRepository(connection)
+	movieRepository := database.NewPGMovieRepository(connection)
+	imageRepository := database.NewPGImageRepository(connection)
+
 	storageGateway := aws.NewS3StorageGateway(awsCfg, cfg.Aws.S3.Bucket)
 	videoService := service.NewVideoService(storageGateway, videoRepository, eventMediator, cfg.Aws.S3.BaseFolder)
-	videoController := web.NewVideoController(r, videoService, cfg.App.MaxFileSize)
+	movieService := service.NewMovieService(movieRepository)
+	imageService := service.NewImageService(imageRepository, storageGateway)
+
+	videoController := controller.NewVideoController(r, videoService, cfg.App.MaxFileSize)
+	movieController := controller.NewMovieController(r, movieService)
+	imageController := controller.NewImageController(r, imageService, cfg.App.MaxFileSize)
 
 	videoController.SetupRoutes()
+	movieController.SetupRoutes()
+	imageController.SetupRoutes()
 
 	log.Println(fmt.Sprintf("Server started on port %s", cfg.App.Port))
 	if err := http.ListenAndServe(cfg.App.Port, r); err != nil {
